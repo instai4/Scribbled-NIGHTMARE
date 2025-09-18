@@ -1,0 +1,1213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Creepy Drawings Gallery</title>
+    <link href="https://fonts.googleapis.com/css2?family=Creepster&family=Special+Elite&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --blood-red: #8B0000;
+            --dark-bg: #0a0a0a;
+            --light-text: #f0f0f0;
+            --dark-gray: #1a1a1a;
+            --pulse-animation: pulse 3s infinite;
+            --neon-glow: 0 0 5px var(--blood-red), 0 0 10px var(--blood-red), 0 0 15px var(--blood-red);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background-color: var(--dark-bg);
+            color: var(--light-text);
+            font-family: 'Special Elite', cursive;
+            line-height: 1.6;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(139, 0, 0, 0.1) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(139, 0, 0, 0.1) 0%, transparent 20%);
+            min-height: 100vh;
+            position: relative;
+        }
+        
+        /* Loading Screen Styles */
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--dark-bg);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease-out;
+        }
+        
+        .loading-screen.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        .loading-title {
+            font-family: 'Creepster', cursive;
+            font-size: 3rem;
+            color: var(--blood-red);
+            text-shadow: 3px 3px 0 #000;
+            letter-spacing: 2px;
+            margin-bottom: 2rem;
+            animation: var(--pulse-animation);
+        }
+        
+        .loading-container {
+            width: 300px;
+            height: 30px;
+            border: 2px solid var(--blood-red);
+            border-radius: 5px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: var(--neon-glow);
+        }
+        
+        .loading-progress {
+            height: 100%;
+            width: 0%;
+            background-color: var(--blood-red);
+            transition: width 0.4s ease;
+        }
+        
+        .loading-text {
+            margin-top: 1rem;
+            font-size: 1rem;
+            color: #aaa;
+            text-align: center;
+        }
+        
+        .loading-dots {
+            display: inline-block;
+            width: 20px;
+            text-align: left;
+        }
+        
+        .loading-dots::after {
+            content: '';
+            animation: dots 1.5s infinite;
+        }
+        
+        .blood-splatter {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+            opacity: 0.1;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath fill='%238B0000' d='M30,30 Q40,15 50,30 T70,30 Q85,40 70,50 T70,70 Q60,85 50,70 T30,70 Q15,60 30,50 T30,30'/%3E%3C/svg%3E");
+            background-size: 200px;
+        }
+        
+        .cobweb {
+            position: fixed;
+            width: 100px;
+            height: 100px;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath fill='none' stroke='rgba(255,255,255,0.2)' stroke-width='1' d='M50,0 Q70,30 100,50 Q70,70 50,100 Q30,70 0,50 Q30,30 50,0'/%3E%3Cline x1='50' y1='0' x2='50' y2='100' stroke='rgba(255,255,255,0.2)' stroke-width='1'/%3E%3Cline x1='0' y1='50' x2='100' y2='50' stroke='rgba(255,255,255,0.2)' stroke-width='1'/%3E%3C/svg%3E");
+            background-size: contain;
+            background-repeat: no-repeat;
+            pointer-events: none;
+            z-index: 100;
+        }
+        
+        .cobweb.tl { top: 20px; left: 20px; }
+        .cobweb.tr { top: 20px; right: 20px; transform: scaleX(-1); }
+        .cobweb.bl { bottom: 20px; left: 20px; transform: scaleY(-1); }
+        .cobweb.br { bottom: 20px; right: 20px; transform: scale(-1); }
+        
+        header {
+            text-align: center;
+            padding: 2rem 1rem;
+            position: relative;
+            border-bottom: 1px solid var(--blood-red);
+            background: rgba(10, 10, 10, 0.9);
+        }
+        
+        h1 {
+            font-family: 'Creepster', cursive;
+            font-size: 4rem;
+            color: var(--blood-red);
+            text-shadow: 3px 3px 0 #000;
+            letter-spacing: 2px;
+            margin-bottom: 0.5rem;
+            animation: var(--pulse-animation);
+        }
+        
+        .tagline {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            color: #aaa;
+        }
+        
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+        
+        .navigation {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin: 1rem 0;
+        }
+        
+        .nav-btn {
+            background: var(--dark-gray);
+            color: var(--light-text);
+            border: 1px solid var(--blood-red);
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            font-family: 'Special Elite', cursive;
+            transition: all 0.3s;
+            border-radius: 3px;
+        }
+        
+        .nav-btn:hover, .nav-btn.active {
+            background: var(--blood-red);
+            color: black;
+            box-shadow: var(--neon-glow);
+        }
+        
+        .search-container {
+            position: relative;
+            margin: 0.5rem 0;
+        }
+        
+        .search-box {
+            background: var(--dark-gray);
+            color: var(--light-text);
+            border: 1px solid var(--blood-red);
+            padding: 0.5rem 1rem 0.5rem 2.5rem;
+            width: 250px;
+            font-family: 'Special Elite', cursive;
+            border-radius: 3px;
+        }
+        
+        .search-icon {
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #aaa;
+        }
+        
+        .utility-buttons {
+            display: flex;
+            gap: 0.5rem;
+            margin: 0.5rem 0;
+        }
+        
+        .util-btn {
+            background: var(--dark-gray);
+            color: var(--light-text);
+            border: 1px solid var(--blood-red);
+            padding: 0.5rem;
+            cursor: pointer;
+            font-family: 'Special Elite', cursive;
+            transition: all 0.3s;
+            border-radius: 3px;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .util-btn:hover {
+            background: var(--blood-red);
+            color: black;
+            box-shadow: var(--neon-glow);
+        }
+        
+        .gallery-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+            padding: 2rem;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+        
+        .drawing-card {
+            background: var(--dark-gray);
+            border: 1px solid #333;
+            border-radius: 5px;
+            overflow: hidden;
+            transition: transform 0.3s, box-shadow 0.3s;
+            position: relative;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+        }
+        
+        .drawing-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 25px rgba(139, 0, 0, 0.3);
+            border-color: var(--blood-red);
+        }
+        
+        .drawing-img-container {
+            width: 100%;
+            height: 250px;
+            overflow: hidden;
+            position: relative;
+            border-bottom: 1px solid #333;
+            background: #222;
+        }
+        
+        .drawing-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s;
+        }
+        
+        .drawing-card:hover .drawing-img {
+            transform: scale(1.05);
+        }
+        
+        .img-placeholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #1a1a1a;
+            color: #666;
+            font-size: 3rem;
+        }
+        
+        .drawing-info {
+            padding: 1rem;
+        }
+        
+        .drawing-title {
+            font-family: 'Creepster', cursive;
+            color: var(--blood-red);
+            margin-bottom: 0.5rem;
+            font-size: 1.5rem;
+        }
+        
+        .drawing-desc {
+            font-size: 0.9rem;
+            color: #bbb;
+            margin-bottom: 1rem;
+        }
+        
+        .drawing-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+        
+        .tag {
+            background: rgba(139, 0, 0, 0.2);
+            color: #cc8888;
+            padding: 0.2rem 0.5rem;
+            border-radius: 3px;
+            font-size: 0.8rem;
+        }
+        
+        .card-actions {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            display: flex;
+            gap: 0.5rem;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .drawing-card:hover .card-actions {
+            opacity: 1;
+        }
+        
+        .action-btn {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: rgba(0, 0, 0, 0.7);
+            border: 1px solid var(--blood-red);
+            color: var(--blood-red);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .action-btn:hover {
+            background: var(--blood-red);
+            color: black;
+            box-shadow: var(--neon-glow);
+        }
+        
+        .favorite-btn.active {
+            background: var(--blood-red);
+            color: black;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 1000;
+            overflow: auto;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .modal-content {
+            position: relative;
+            margin: 2rem auto;
+            max-width: 90%;
+            max-height: 90vh;
+            width: auto;
+            animation: fadeIn 0.5s;
+        }
+        
+        .modal-img-container {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #000;
+            padding: 20px;
+            border: 2px solid var(--blood-red);
+            box-shadow: 0 0 30px rgba(139, 0, 0, 0.3);
+        }
+        
+        .modal-img {
+            display: block;
+            max-width: 100%;
+            max-height: 70vh;
+            margin: 0 auto;
+        }
+        
+        .modal-info {
+            color: white;
+            text-align: center;
+            padding: 1rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .modal-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            pointer-events: none;
+        }
+        
+        .modal-nav-btn {
+            pointer-events: all;
+            width: 50px;
+            height: 50px;
+            background: rgba(0, 0, 0, 0.7);
+            border: 1px solid var(--blood-red);
+            color: var(--blood-red);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            margin: 0 20px;
+            transition: all 0.3s;
+        }
+        
+        .modal-nav-btn:hover {
+            background: var(--blood-red);
+            color: black;
+            box-shadow: var(--neon-glow);
+        }
+        
+        .close-modal {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            color: white;
+            background: var(--blood-red);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1.5rem;
+            transition: all 0.3s;
+            z-index: 1001;
+        }
+        
+        .close-modal:hover {
+            transform: rotate(90deg);
+            background: #ff0000;
+        }
+        
+        .modal-actions {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .modal-action-btn {
+            background: var(--dark-gray);
+            color: var(--light-text);
+            border: 1px solid var(--blood-red);
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            font-family: 'Special Elite', cursive;
+            transition: all 0.3s;
+            border-radius: 3px;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .modal-action-btn:hover {
+            background: var(--blood-red);
+            color: black;
+            box-shadow: var(--neon-glow);
+        }
+        
+        footer {
+            text-align: center;
+            padding: 2rem;
+            margin-top: 2rem;
+            border-top: 1px solid var(--blood-red);
+            background: rgba(10, 10, 10, 0.9);
+            color: #666;
+        }
+        
+        .loading-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 3px;
+            background: var(--blood-red);
+            width: 0%;
+            z-index: 9999;
+            transition: width 0.4s ease;
+        }
+        
+        .notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--dark-gray);
+            color: var(--light-text);
+            border: 1px solid var(--blood-red);
+            padding: 1rem;
+            border-radius: 5px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s;
+            z-index: 1000;
+        }
+        
+        .notification.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        
+        @keyframes pulse {
+            0% { text-shadow: 0 0 5px rgba(139, 0, 0, 0.7); }
+            50% { text-shadow: 0 0 20px rgba(139, 0, 0, 1), 0 0 30px rgba(255, 0, 0, 0.5); }
+            100% { text-shadow: 0 0 5px rgba(139, 0, 0, 0.7); }
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes dots {
+            0%, 20% { content: '.'; }
+            40% { content: '..'; }
+            60%, 100% { content: '...'; }
+        }
+        
+        .candle-flicker {
+            animation: flicker 2s infinite alternate;
+        }
+        
+        @keyframes flicker {
+            0% { opacity: 0.7; }
+            5% { opacity: 0.8; }
+            10% { opacity: 0.6; }
+            15% { opacity: 0.9; }
+            20% { opacity: 0.7; }
+            25% { opacity: 0.8; }
+            30% { opacity: 1; }
+            35% { opacity: 0.7; }
+            40% { opacity: 0.9; }
+            100% { opacity: 0.8; }
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.5rem;
+            }
+            
+            .loading-title {
+                font-size: 2rem;
+            }
+            
+            .loading-container {
+                width: 250px;
+            }
+            
+            .gallery-container {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+                padding: 1rem;
+                gap: 1rem;
+            }
+            
+            .drawing-img-container {
+                height: 200px;
+            }
+            
+            .search-box {
+                width: 200px;
+            }
+            
+            .modal-nav-btn {
+                width: 40px;
+                height: 40px;
+                margin: 0 10px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .navigation {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .nav-btn {
+                width: 200px;
+            }
+            
+            .search-box {
+                width: 100%;
+            }
+            
+            .loading-title {
+                font-size: 1.8rem;
+                text-align: center;
+                padding: 0 1rem;
+            }
+            
+            .loading-container {
+                width: 200px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div class="loading-screen" id="loadingScreen">
+        <h2 class="loading-title">Entering the Nightmare...</h2>
+        <div class="loading-container">
+            <div class="loading-progress" id="loadingProgress"></div>
+        </div>
+        <p class="loading-text">Summoning horrors<span class="loading-dots"></span></p>
+    </div>
+    
+    <div class="loading-bar" id="loadingBar"></div>
+    <div class="blood-splatter"></div>
+    <div class="cobweb tl"></div>
+    <div class="cobweb tr"></div>
+    <div class="cobweb bl"></div>
+    <div class="cobweb br"></div>
+    
+    <header>
+        <h1 class="candle-flicker">The Scribbled NIGHTMARE</h1>
+        <p class="tagline">Glimpse the monsters that live behind your eyes</p>
+        
+        <div class="controls">
+            <div class="search-container">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" class="search-box" id="searchBox" placeholder="Search nightmares...">
+            </div>
+            
+            <div class="utility-buttons">
+                <button class="util-btn" id="shuffleBtn" title="Shuffle drawings">
+                    <i class="fas fa-random"></i>
+                </button>
+                <button class="util-btn" id="viewFavorites" title="View favorites">
+                    <i class="fas fa-heart"></i>
+                </button>
+            </div>
+        </div>
+        
+        <div class="navigation">
+            <button class="nav-btn active" data-filter="all">All Drawings</button>
+            <button class="nav-btn" data-filter="monsters">Monsters</button>
+            <button class="nav-btn" data-filter="ghosts">Ghosts</button>
+            <button class="nav-btn" data-filter="creatures">Creatures</button>
+            <button class="nav-btn" data-filter="abstract">Abstract Horror</button>
+        </div>
+    </header>
+    
+    <main>
+        <div class="gallery-container" id="gallery">
+            <!-- Drawing cards will be dynamically generated here -->
+        </div>
+    </main>
+    
+    <div class="modal" id="drawingModal">
+        <div class="close-modal" id="closeModal">&times;</div>
+        <div class="modal-content">
+            <div class="modal-nav">
+                <button class="modal-nav-btn" id="prevDrawing">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <button class="modal-nav-btn" id="nextDrawing">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+            <div class="modal-img-container">
+                <img class="modal-img" id="modalImage" src="" alt="">
+            </div>
+            <div class="modal-info">
+                <h2 class="drawing-title" id="modalTitle"></h2>
+                <p id="modalDesc"></p>
+                <div class="modal-actions">
+                    <button class="modal-action-btn" id="modalFavoriteBtn">
+                        <i class="far fa-heart"></i> Add to Favorites
+                    </button>
+                    <button class="modal-action-btn" id="downloadBtn">
+                        <i class="fas fa-download"></i> Download
+                    </button>
+                    <button class="modal-action-btn" id="shareBtn">
+                        <i class="fas fa-share-alt"></i> Share
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="notification" id="notification">
+        <span id="notificationText"></span>
+    </div>
+    
+    <footer>
+        <p>Enter if you dare... © 2023 Creepy Drawings Gallery</p>
+    </footer>
+
+    <script>
+        // Sample data for the drawings with your image names
+        const drawingsData = [
+            { id: 1, title: "Screaming Void", description: "A being consumed by a silent, agonizing terror.", tags: ["monsters", "abstract"], imageUrl: "1.jpg" },
+            { id: 2, title: "Grinning Predator", description: "Its toothy smile hides a deep, unsettling hunger.", tags: ["monsters", "creatures"], imageUrl: "2.jpg" },
+            { id: 3, title: "The Bleeding Shadow", description: "A dark figure with a blade, dripping with a crimson past.", tags: ["abstract", "ghosts"], imageUrl: "3.jpg" },
+            { id: 4, title: "The Stitch-Mouth Specter", description: "A skeletal figure with a sewn-up smile and a hollow gaze.", tags: ["ghosts", "creatures"], imageUrl: "4.jpg" },
+            { id: 5, title: "The Trapped Spirit", description: "A lonely, ghost-like figure enclosed within a confining space.", tags: ["ghosts", "abstract"], imageUrl: "5.jpg" },
+            { id: 6, title: "The Star Eater", description: "A monstrous creature devouring the night sky, one star at a time.", tags: ["monsters", "abstract"], imageUrl: "6.jpg" },
+            { id: 7, title: "The Twin Phantoms", description: "Two ghostly birds of prey hunting for souls in the darkness.", tags: ["monsters", "ghosts"], imageUrl: "7.jpg" },
+            { id: 8, title: "The Bone Wolf", description: "A spectral canine with a menacing grin and a skeletal face.", tags: ["monsters", "creatures"], imageUrl: "8.jpg" },
+            { id: 9, title: "The Soul Tree", description: "A barren tree growing under a strange, fractured moon.", tags: ["abstract", "ghosts"], imageUrl: "9.jpg" },
+            { id: 10, title: "The Rooftop Stalker", description: "A monstrous stag-like creature looming over a lonely house.", tags: ["monsters", "abstract"], imageUrl: "10.jpg" },
+            { id: 11, title: "The Hanging Tree", description: "A solitary figure stands before a tree of forgotten souls.", tags: ["ghosts", "abstract"], imageUrl: "11.jpg" },
+            { id: 12, title: "Well of Sorrows", description: "Figures gather at a well, its water tainted by a dark past.", tags: ["ghosts", "abstract"], imageUrl: "12.jpg" },
+            { id: 13, title: "The Guardian Roots", description: "Two colossal figures emerge from the stump, looming over a small clearing.", tags: ["monsters", "creatures"], imageUrl: "13.jpg" },
+            { id: 14, title: "The Family Portal", description: "A family moves through a portal, unknowingly surrounded by horrors.", tags: ["ghosts", "abstract"], imageUrl: "14.jpg" },
+            { id: 15, title: "The Coffin Rite", description: "A strange ritual takes place, centering on a body in a coffin.", tags: ["ghosts", "abstract"], imageUrl: "15.jpg" },
+            { id: 16, title: "The Red Abduction", description: "A monstrous entity pulls a figure towards a sinister, gaping maw.", tags: ["monsters", "abstract"], imageUrl: "16.jpg" },
+            { id: 17, title: "Swing of Despair", description: "One soul swings happily while another hangs in a twisted duality.", tags: ["ghosts", "abstract"], imageUrl: "17.jpg" },
+            { id: 18, title: "The Lonely Tree", description: "A haunting scene of a hanged man and a creature.", tags: ["ghosts", "abstract"], imageUrl: "18.jpg" },
+            { id: 19, title: "The Unhinged Grin", description: "A wide, toothy smile that holds no trace of joy or sanity.", tags: ["abstract", "creatures"], imageUrl: "19.jpg" },
+            { id: 20, title: "The Tear-Stained Grin", description: "A creature's jagged mouth and crying eyes reveal its inner pain.", tags: ["monsters", "abstract"], imageUrl: "20.jpg" },
+            { id: 21, title: "The Toothy Jester", description: "A wide, unnatural smile with a disturbing set of teeth.", tags: ["creatures", "abstract"], imageUrl: "21.jpg" },
+            { id: 22, title: "The Two-Faced Glitch", description: "A distorted head with two faces, merging into one unsettling form.", tags: ["creatures", "abstract"], imageUrl: "22.jpg" },
+            { id: 23, title: "The Marked Phantom", description: "A dark figure with a mysterious red scar across its face.", tags: ["creatures", "abstract"], imageUrl: "23.jpg" },
+            { id: 24, title: "The Smiling Observer", description: "A tall, grinning entity has returned and it's watching you.", tags: ["monsters", "abstract"], imageUrl: "24.jpg" },
+            { id: 25, title: "The Bleeding Statue", description: "A rigid figure with a hollow stare and a dripping, sanguine expression.", tags: ["creatures", "abstract"], imageUrl: "25.jpg" },
+            { id: 26, title: "The Weeping Stranger", description: "This lanky being with blood-red tears greets you with a sinister 'hello'.", tags: ["ghosts", "abstract"], imageUrl: "26.jpg" },
+            { id: 27, title: "The Blood-Mouthed Invitation", description: "A chilling smile beckons you closer, promising a dreadful encounter.", tags: ["ghosts", "abstract"], imageUrl: "27.jpg" },
+            { id: 28, title: "The Bending Serpent", description: "A long, slender being twists unnaturally, telling you to be quiet.", tags: ["monsters", "creatures"], imageUrl: "28.jpg" }
+        ];
+
+        // DOM elements
+        const gallery = document.getElementById('gallery');
+        const modal = document.getElementById('drawingModal');
+        const modalImage = document.getElementById('modalImage');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalDesc = document.getElementById('modalDesc');
+        const closeModal = document.getElementById('closeModal');
+        const filterButtons = document.querySelectorAll('.nav-btn');
+        const searchBox = document.getElementById('searchBox');
+        const prevButton = document.getElementById('prevDrawing');
+        const nextButton = document.getElementById('nextDrawing');
+        const loadingBar = document.getElementById('loadingBar');
+        const notification = document.getElementById('notification');
+        const notificationText = document.getElementById('notificationText');
+        const shuffleBtn = document.getElementById('shuffleBtn');
+        const viewFavoritesBtn = document.getElementById('viewFavorites');
+        const modalFavoriteBtn = document.getElementById('modalFavoriteBtn');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const shareBtn = document.getElementById('shareBtn');
+        const loadingScreen = document.getElementById('loadingScreen');
+        const loadingProgress = document.getElementById('loadingProgress');
+
+        // State variables
+        let currentDrawings = [];
+        let currentFilter = 'all';
+        let currentSearch = '';
+        let currentModalIndex = 0;
+        let favorites = JSON.parse(localStorage.getItem('favorites')) || [];
+        let isViewingFavorites = false;
+        let imagesLoaded = 0;
+        let totalImages = 0;
+
+        // Preload images for better performance
+        function preloadImages() {
+            totalImages = drawingsData.length;
+            imagesLoaded = 0;
+            
+            drawingsData.forEach(drawing => {
+                const img = new Image();
+                img.onload = imageLoaded;
+                img.onerror = imageLoaded;
+                img.src = drawing.imageUrl;
+            });
+        }
+        
+        // Track image loading progress
+        function imageLoaded() {
+            imagesLoaded++;
+            const progress = Math.round((imagesLoaded / totalImages) * 100);
+            updateLoadingScreen(progress);
+            
+            if (imagesLoaded === totalImages) {
+                setTimeout(hideLoadingScreen, 500);
+            }
+        }
+        
+        // Update loading screen progress
+        function updateLoadingScreen(percent) {
+            loadingProgress.style.width = percent + '%';
+        }
+        
+        // Hide loading screen
+        function hideLoadingScreen() {
+            loadingScreen.classList.add('hidden');
+        }
+
+        // Initialize the gallery
+        function initGallery() {
+            updateLoadingBar(30);
+            preloadImages();
+            updateLoadingBar(70);
+            currentDrawings = [...drawingsData];
+            generateDrawingCards(currentDrawings);
+            updateLoadingBar(100);
+            
+            // Hide loading bar after a short delay
+            setTimeout(() => {
+                loadingBar.style.width = '0%';
+            }, 500);
+            
+            // Check if favorites exist
+            if (favorites.length > 0) {
+                viewFavoritesBtn.classList.add('has-favorites');
+            }
+        }
+
+        // Update loading bar
+        function updateLoadingBar(percent) {
+            loadingBar.style.width = percent + '%';
+        }
+
+        // Show notification
+        function showNotification(message, duration = 3000) {
+            notificationText.textContent = message;
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, duration);
+        }
+
+        // Generate drawing cards
+        function generateDrawingCards(drawings) {
+            gallery.innerHTML = '';
+            
+            if (drawings.length === 0) {
+                gallery.innerHTML = `
+                    <div class="no-results">
+                        <h2>No drawings found</h2>
+                        <p>Try a different search or filter</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            drawings.forEach((drawing, index) => {
+                const isFavorite = favorites.includes(drawing.id);
+                
+                const card = document.createElement('div');
+                card.className = 'drawing-card';
+                card.dataset.tags = drawing.tags.join(' ');
+                card.dataset.index = index;
+                
+                card.innerHTML = `
+                    <div class="drawing-img-container">
+                        <img class="drawing-img" src="${drawing.imageUrl}" alt="${drawing.title}" loading="lazy">
+                        <div class="card-actions">
+                            <button class="action-btn favorite-btn ${isFavorite ? 'active' : ''}" data-id="${drawing.id}">
+                                <i class="${isFavorite ? 'fas' : 'far'} fa-heart"></i>
+                            </button>
+                            <button class="action-btn expand-btn" data-index="${index}">
+                                <i class="fas fa-expand"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="drawing-info">
+                        <h3 class="drawing-title">${drawing.title}</h3>
+                        <p class="drawing-desc">${drawing.description}</p>
+                        <div class="drawing-tags">
+                            ${drawing.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
+                        </div>
+                    </div>
+                `;
+                
+                card.addEventListener('click', (e) => {
+                    if (!e.target.closest('.action-btn')) {
+                        openModal(drawing, index);
+                    }
+                });
+                
+                // Add event listeners to action buttons
+                const favoriteBtn = card.querySelector('.favorite-btn');
+                favoriteBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    toggleFavorite(drawing.id, favoriteBtn);
+                });
+                
+                const expandBtn = card.querySelector('.expand-btn');
+                expandBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    openModal(drawing, index);
+                });
+                
+                gallery.appendChild(card);
+            });
+        }
+
+        // Toggle favorite
+        function toggleFavorite(id, button) {
+            const index = favorites.indexOf(id);
+            
+            if (index === -1) {
+                favorites.push(id);
+                button.classList.add('active');
+                button.innerHTML = '<i class="fas fa-heart"></i>';
+                showNotification('Added to favorites');
+                
+                // Add visual indicator that there are favorites
+                viewFavoritesBtn.classList.add('has-favorites');
+            } else {
+                favorites.splice(index, 1);
+                button.classList.remove('active');
+                button.innerHTML = '<i class="far fa-heart"></i>';
+                showNotification('Removed from favorites');
+                
+                // If no favorites left, remove indicator
+                if (favorites.length === 0) {
+                    viewFavoritesBtn.classList.remove('has-favorites');
+                }
+                
+                // If we're currently viewing favorites, update the view
+                if (isViewingFavorites) {
+                    filterFavorites();
+                }
+            }
+            
+            // Update modal favorite button if this drawing is currently open
+            if (parseInt(modal.dataset.id) === id) {
+                updateModalFavoriteButton(id);
+            }
+            
+            // Save to localStorage
+            localStorage.setItem('favorites', JSON.stringify(favorites));
+        }
+
+        // Update modal favorite button
+        function updateModalFavoriteButton(id) {
+            const isFavorite = favorites.includes(id);
+            modalFavoriteBtn.innerHTML = `
+                <i class="${isFavorite ? 'fas' : 'far'} fa-heart"></i> 
+                ${isFavorite ? 'Remove from' : 'Add to'} Favorites
+            `;
+        }
+
+        // Filter favorites
+        function filterFavorites() {
+            isViewingFavorites = true;
+            const favoriteDrawings = currentDrawings.filter(drawing => 
+                favorites.includes(drawing.id)
+            );
+            
+            generateDrawingCards(favoriteDrawings);
+            showNotification(`Showing ${favoriteDrawings.length} favorite drawings`);
+            
+            // Update active states
+            filterButtons.forEach(btn => btn.classList.remove('active'));
+        }
+
+        // Open modal with drawing details
+        function openModal(drawing, index) {
+            modal.style.display = 'block';
+            setTimeout(() => {
+                modal.style.opacity = 1;
+            }, 10);
+            
+            modalImage.src = drawing.imageUrl;
+            modalImage.alt = drawing.title;
+            modalTitle.textContent = drawing.title;
+            modalDesc.textContent = drawing.description;
+            
+            // Store current modal index and ID
+            modal.dataset.index = index;
+            modal.dataset.id = drawing.id;
+            
+            // Update favorite button
+            updateModalFavoriteButton(drawing.id);
+            
+            document.body.style.overflow = 'hidden';
+        }
+
+        // Navigate to next/previous drawing in modal
+        function navigateModal(direction) {
+            let newIndex = parseInt(modal.dataset.index) + direction;
+            
+            // Boundary checks
+            if (newIndex < 0) newIndex = currentDrawings.length - 1;
+            if (newIndex >= currentDrawings.length) newIndex = 0;
+            
+            const drawing = currentDrawings[newIndex];
+            modal.dataset.index = newIndex;
+            
+            // Fade out current image
+            modalImage.style.opacity = 0;
+            
+            setTimeout(() => {
+                modalImage.src = drawing.imageUrl;
+                modalImage.alt = drawing.title;
+                modalTitle.textContent = drawing.title;
+                modalDesc.textContent = drawing.description;
+                
+                // Update favorite button
+                updateModalFavoriteButton(drawing.id);
+                
+                // Store ID
+                modal.dataset.id = drawing.id;
+                
+                // Fade in new image
+                setTimeout(() => {
+                    modalImage.style.opacity = 1;
+                }, 50);
+            }, 300);
+        }
+
+        // Close modal
+        function closeModalFunc() {
+            modal.style.opacity = 0;
+            setTimeout(() => {
+                modal.style.display = 'none';
+            }, 300);
+            
+            document.body.style.overflow = 'auto';
+        }
+
+        // Filter drawings
+        function filterDrawings(filter) {
+            currentFilter = filter;
+            isViewingFavorites = false;
+            
+            if (filter === 'all') {
+                currentDrawings = [...drawingsData];
+            } else {
+                currentDrawings = drawingsData.filter(drawing => 
+                    drawing.tags.includes(filter)
+                );
+            }
+            
+            // Apply search filter if there is one
+            if (currentSearch) {
+                currentDrawings = currentDrawings.filter(drawing => 
+                    drawing.title.toLowerCase().includes(currentSearch) || 
+                    drawing.description.toLowerCase().includes(currentSearch) ||
+                    drawing.tags.some(tag => tag.toLowerCase().includes(currentSearch))
+                );
+            }
+            
+            generateDrawingCards(currentDrawings);
+        }
+
+        // Search drawings
+        function searchDrawings(query) {
+            currentSearch = query.toLowerCase();
+            
+            if (currentSearch === '') {
+                filterDrawings(currentFilter);
+                return;
+            }
+            
+            currentDrawings = drawingsData.filter(drawing => 
+                drawing.title.toLowerCase().includes(currentSearch) || 
+                drawing.description.toLowerCase().includes(currentSearch) ||
+                drawing.tags.some(tag => tag.toLowerCase().includes(currentSearch))
+            );
+            
+            // If we're viewing favorites, we need to respect that
+            if (isViewingFavorites) {
+                currentDrawings = currentDrawings.filter(drawing => 
+                    favorites.includes(drawing.id)
+                );
+            } else if (currentFilter !== 'all') {
+                currentDrawings = currentDrawings.filter(drawing => 
+                    drawing.tags.includes(currentFilter)
+                );
+            }
+            
+            generateDrawingCards(currentDrawings);
+        }
+
+        // Shuffle drawings
+        function shuffleDrawings() {
+            currentDrawings = [...drawingsData];
+            
+            // Fisher-Yates shuffle algorithm
+            for (let i = currentDrawings.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [currentDrawings[i], currentDrawings[j]] = [currentDrawings[j], currentDrawings[i]];
+            }
+            
+            generateDrawingCards(currentDrawings);
+            showNotification('Drawings shuffled');
+        }
+
+        // Download image
+        function downloadImage() {
+            const imageUrl = modalImage.src;
+            const fileName = modalTitle.textContent.replace(/\s+/g, '_') + '.jpg';
+            
+            // Create a temporary link
+            const link = document.createElement('a');
+            link.href = imageUrl;
+            link.download = fileName;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            showNotification('Download started');
+        }
+
+        // Share image
+        function shareImage() {
+            if (navigator.share) {
+                navigator.share({
+                    title: modalTitle.textContent,
+                    text: modalDesc.textContent,
+                    url: window.location.href
+                })
+                .then(() => showNotification('Thanks for sharing!'))
+                .catch(error => showNotification('Could not share: ' + error));
+            } else {
+                showNotification('Web Share API not supported in your browser');
+            }
+        }
+
+        // Event listeners
+        closeModal.addEventListener('click', closeModalFunc);
+        
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                closeModalFunc();
+            }
+        });
+        
+        filterButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                filterButtons.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+                filterDrawings(button.dataset.filter);
+            });
+        });
+        
+        searchBox.addEventListener('input', (e) => {
+            searchDrawings(e.target.value);
+        });
+        
+        prevButton.addEventListener('click', () => navigateModal(-1));
+        nextButton.addEventListener('click', () => navigateModal(1));
+        
+        shuffleBtn.addEventListener('click', shuffleDrawings);
+        viewFavoritesBtn.addEventListener('click', filterFavorites);
+        modalFavoriteBtn.addEventListener('click', () => {
+            const id = parseInt(modal.dataset.id);
+            toggleFavorite(id, modalFavoriteBtn);
+        });
+        downloadBtn.addEventListener('click', downloadImage);
+        shareBtn.addEventListener('click', shareImage);
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (modal.style.display === 'block') {
+                if (e.key === 'Escape') closeModalFunc();
+                if (e.key === 'ArrowLeft') navigateModal(-1);
+                if (e.key === 'ArrowRight') navigateModal(1);
+            }
+        });
+
+        // Initialize the gallery
+        initGallery();
+
+        // Add some dynamic effects
+        document.addEventListener('mousemove', (e) => {
+            const blood = document.querySelector('.blood-splatter');
+            const moveX = (e.clientX - window.innerWidth / 2) / 25;
+            const moveY = (e.clientY - window.innerHeight / 2) / 25;
+            blood.style.backgroundPosition = `${50 + moveX}% ${50 + moveY}%`;
+        });
+
+        // Random flickering effect for added creepiness
+        setInterval(() => {
+            const randomCard = document.querySelectorAll('.drawing-card')[Math.floor(Math.random() * drawingsData.length)];
+            if (randomCard) {
+                randomCard.style.boxShadow = '0 0 15px var(--blood-red)';
+                setTimeout(() => {
+                    randomCard.style.boxShadow = '';
+                }, 300);
+            }
+        }, 2000);
+    </script>
+</body>
+</html>
