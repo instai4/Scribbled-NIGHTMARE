@@ -626,6 +626,55 @@
                 width: 200px;
             }
         }
+
+  .footer-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+  }
+  
+  .creator {
+    font-size: 1.1rem;
+    color: #aaa;
+  }
+  
+  .creator-name {
+    font-weight: bold;
+    color: var(--blood-red);
+    text-decoration: none;
+    transition: all 0.3s;
+    text-shadow: 0 0 5px rgba(139, 0, 0, 0.5);
+  }
+  
+  .creator-name:hover {
+    text-shadow: 0 0 10px var(--blood-red), 0 0 20px var(--blood-red);
+    color: #ff0000;
+  }
+  
+  .social-icons {
+    display: flex;
+    gap: 1.5rem;
+  }
+  
+  .social-icon {
+    color: #aaa;
+    font-size: 1.5rem;
+    transition: all 0.3s;
+  }
+  
+  .social-icon:hover {
+    color: var(--blood-red);
+    transform: translateY(-3px);
+    text-shadow: 0 0 10px rgba(139, 0, 0, 0.7);
+  }
+  
+  .copyright {
+    margin-top: 1rem;
+    color: #666;
+    font-size: 0.9rem;
+  }
+
     </style>
 </head>
 <body>
@@ -716,9 +765,28 @@
         <span id="notificationText"></span>
     </div>
     
-    <footer>
-        <p>Enter if you dare... © 2023 Creepy Drawings Gallery</p>
-    </footer>
+   <footer>
+  <div class="footer-content">
+    <p class="creator">Created by <a href="https://instai4.github.io/PORT-FOLIO/" target="_blank" class="creator-name">Anurag</a></p>
+    
+    <div class="social-icons">
+      <a href="https://www.instagram.com/inst.ai.4?igsh=MWNqaG15OWQ2MGczMA==" target="_blank" class="social-icon" aria-label="Instagram">
+        <i class="fab fa-instagram"></i>
+      </a>
+      <a href="https://www.facebook.com/share/1DMBwCvzDL/" target="_blank" class="social-icon" aria-label="Facebook">
+        <i class="fab fa-facebook"></i>
+      </a>
+      <a href="https://www.linkedin.com/in/anurag-singh-43230a380/" target="_blank" class="social-icon" aria-label="LinkedIn">
+        <i class="fab fa-linkedin"></i>
+      </a>
+      <a href="https://github.com/instai4" target="_blank" class="social-icon" aria-label="GitHub">
+        <i class="fab fa-github"></i>
+      </a>
+    </div>
+    
+    <p class="copyright">Enter if you dare... © 2025 Creepy Drawings Gallery</p>
+  </div>
+</footer>
 
     <script>
         // Sample data for the drawings with your image names
