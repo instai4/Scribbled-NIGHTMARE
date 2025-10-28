@@ -236,6 +236,28 @@
             box-shadow: var(--neon-glow);
         }
         
+        /* Theme Toggle Button */
+        .theme-toggle {
+            background: var(--dark-gray);
+            color: var(--light-text);
+            border: 1px solid var(--blood-red);
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            font-family: 'Special Elite', cursive;
+            transition: all 0.3s;
+            border-radius: 3px;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin: 0.5rem 0;
+        }
+        
+        .theme-toggle:hover {
+            background: var(--blood-red);
+            color: black;
+            box-shadow: var(--neon-glow);
+        }
+        
         .gallery-container {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -567,6 +589,39 @@
             100% { opacity: 0.8; }
         }
         
+        /* Realistic Frame Styles */
+        .realistic-frame {
+            position: relative;
+            overflow: hidden;
+            border-radius: 5px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .realistic-frame::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border: 8px solid #8B4513;
+            border-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Cpath d='M0,0 L100,0 L100,100 L0,100 Z' fill='none' stroke='%238B4513' stroke-width='10'/%3E%3C/svg%3E") 20 round;
+            pointer-events: none;
+            z-index: 1;
+        }
+        
+        .realistic-frame::after {
+            content: '';
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            right: 5px;
+            bottom: 5px;
+            border: 2px solid rgba(139, 69, 19, 0.3);
+            pointer-events: none;
+            z-index: 1;
+        }
+        
         /* Responsive adjustments */
         @media (max-width: 768px) {
             h1 {
@@ -600,6 +655,11 @@
                 height: 40px;
                 margin: 0 10px;
             }
+            
+            .theme-toggle {
+                padding: 0.5rem;
+                font-size: 0.8rem;
+            }
         }
         
         @media (max-width: 480px) {
@@ -625,55 +685,65 @@
             .loading-container {
                 width: 200px;
             }
+            
+            .controls {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .theme-toggle {
+                width: 100%;
+                justify-content: center;
+            }
         }
 
-  .footer-content {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 1rem;
-  }
-  
-  .creator {
-    font-size: 1.1rem;
-    color: #aaa;
-  }
-  
-  .creator-name {
-    font-weight: bold;
-    color: var(--blood-red);
-    text-decoration: none;
-    transition: all 0.3s;
-    text-shadow: 0 0 5px rgba(139, 0, 0, 0.5);
-  }
-  
-  .creator-name:hover {
-    text-shadow: 0 0 10px var(--blood-red), 0 0 20px var(--blood-red);
-    color: #ff0000;
-  }
-  
-  .social-icons {
-    display: flex;
-    gap: 1.5rem;
-  }
-  
-  .social-icon {
-    color: #aaa;
-    font-size: 1.5rem;
-    transition: all 0.3s;
-  }
-  
-  .social-icon:hover {
-    color: var(--blood-red);
-    transform: translateY(-3px);
-    text-shadow: 0 0 10px rgba(139, 0, 0, 0.7);
-  }
-  
-  .copyright {
-    margin-top: 1rem;
-    color: #666;
-    font-size: 0.9rem;
-  }
+        .footer-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .creator {
+            font-size: 1.1rem;
+            color: #aaa;
+        }
+        
+        .creator-name {
+            font-weight: bold;
+            color: var(--blood-red);
+            text-decoration: none;
+            transition: all 0.3s;
+            text-shadow: 0 0 5px rgba(139, 0, 0, 0.5);
+        }
+        
+        .creator-name:hover {
+            text-shadow: 0 0 10px var(--blood-red), 0 0 20px var(--blood-red);
+            color: #ff0000;
+        }
+        
+        .social-icons {
+            display: flex;
+            gap: 1.5rem;
+        }
+        
+        .social-icon {
+            color: #aaa;
+            font-size: 1.5rem;
+            transition: all 0.3s;
+        }
+        
+        .social-icon:hover {
+            color: var(--blood-red);
+            transform: translateY(-3px);
+            text-shadow: 0 0 10px rgba(139, 0, 0, 0.7);
+        }
+        
+        .copyright {
+            margin-top: 1rem;
+            color: #666;
+            font-size: 0.9rem;
+        }
 
     </style>
 </head>
@@ -713,6 +783,11 @@
                 </button>
             </div>
         </div>
+        
+        <button class="theme-toggle" id="themeToggle">
+            <i class="fas fa-palette"></i>
+            <span>View Realistic Versions</span>
+        </button>
         
         <div class="navigation">
             <button class="nav-btn active" data-filter="all">All Drawings</button>
@@ -791,39 +866,39 @@
     <script>
         // Sample data for the drawings with your image names
         const drawingsData = [
-            { id: 1, title: "Screaming Void", description: "A being consumed by a silent, agonizing terror.", tags: ["monsters", "abstract"], imageUrl: "./img/1.jpg" },
-            { id: 2, title: "Grinning Predator", description: "Its toothy smile hides a deep, unsettling hunger.", tags: ["monsters", "creatures"], imageUrl: "./img/2.jpg" },
-            { id: 3, title: "The Bleeding Shadow", description: "A dark figure with a blade, dripping with a crimson past.", tags: ["abstract", "ghosts"], imageUrl: "./img/3.jpg" },
-            { id: 4, title: "The Stitch-Mouth Specter", description: "A skeletal figure with a sewn-up smile and a hollow gaze.", tags: ["ghosts", "creatures"], imageUrl: "./img/4.jpg" },
-            { id: 5, title: "The Trapped Spirit", description: "A lonely, ghost-like figure enclosed within a confining space.", tags: ["ghosts", "abstract"], imageUrl: "./img/5.jpg" },
-            { id: 6, title: "The Star Eater", description: "A monstrous creature devouring the night sky, one star at a time.", tags: ["monsters", "abstract"], imageUrl: "./img/6.jpg" },
-            { id: 7, title: "The Twin Phantoms", description: "Two ghostly birds of prey hunting for souls in the darkness.", tags: ["monsters", "ghosts"], imageUrl: "./img/7.jpg" },
-            { id: 8, title: "The Bone Wolf", description: "A spectral canine with a menacing grin and a skeletal face.", tags: ["monsters", "creatures"], imageUrl: "./img/8.jpg" },
-            { id: 9, title: "The Soul Tree", description: "A barren tree growing under a strange, fractured moon.", tags: ["abstract", "ghosts"], imageUrl: "./img/9.jpg" },
-            { id: 10, title: "The Rooftop Stalker", description: "A monstrous stag-like creature looming over a lonely house.", tags: ["monsters", "abstract"], imageUrl: "./img/10.jpg" },
-            { id: 11, title: "The Hanging Tree", description: "A solitary figure stands before a tree of forgotten souls.", tags: ["ghosts", "abstract"], imageUrl: "./img/11.jpg" },
-            { id: 12, title: "Well of Sorrows", description: "Figures gather at a well, its water tainted by a dark past.", tags: ["ghosts", "abstract"], imageUrl: "./img/12.jpg" },
-            { id: 13, title: "The Guardian Roots", description: "Two colossal figures emerge from the stump, looming over a small clearing.", tags: ["monsters", "creatures"], imageUrl: "./img/13.jpg" },
-            { id: 14, title: "The Family Portal", description: "A family moves through a portal, unknowingly surrounded by horrors.", tags: ["ghosts", "abstract"], imageUrl: "./img/14.jpg" },
-            { id: 15, title: "The Coffin Rite", description: "A strange ritual takes place, centering on a body in a coffin.", tags: ["ghosts", "abstract"], imageUrl: "./img/15.jpg" },
-            { id: 16, title: "The Red Abduction", description: "A monstrous entity pulls a figure towards a sinister, gaping maw.", tags: ["monsters", "abstract"], imageUrl: "./img/16.jpg" },
-            { id: 17, title: "Swing of Despair", description: "One soul swings happily while another hangs in a twisted duality.", tags: ["ghosts", "abstract"], imageUrl: "./img/17.jpg" },
-            { id: 18, title: "The Lonely Tree", description: "A haunting scene of a hanged man and a creature.", tags: ["ghosts", "abstract"], imageUrl: "./img/18.jpg" },
-            { id: 19, title: "The Unhinged Grin", description: "A wide, toothy smile that holds no trace of joy or sanity.", tags: ["abstract", "creatures"], imageUrl: "./img/19.jpg" },
-            { id: 20, title: "The Tear-Stained Grin", description: "A creature's jagged mouth and crying eyes reveal its inner pain.", tags: ["monsters", "abstract"], imageUrl: "./img/20.jpg" },
-            { id: 21, title: "The Toothy Jester", description: "A wide, unnatural smile with a disturbing set of teeth.", tags: ["creatures", "abstract"], imageUrl: "./img/21.jpg" },
-            { id: 22, title: "The Two-Faced Glitch", description: "A distorted head with two faces, merging into one unsettling form.", tags: ["creatures", "abstract"], imageUrl: "./img/22.jpg" },
-            { id: 23, title: "The Marked Phantom", description: "A dark figure with a mysterious red scar across its face.", tags: ["creatures", "abstract"], imageUrl: "./img/23.jpg" },
-            { id: 24, title: "The Smiling Observer", description: "A tall, grinning entity has returned and it's watching you.", tags: ["monsters", "abstract"], imageUrl: "./img/24.jpg" },
-            { id: 25, title: "The Bleeding Statue", description: "A rigid figure with a hollow stare and a dripping, sanguine expression.", tags: ["creatures", "abstract"], imageUrl: "./img/25.jpg" },
-            { id: 26, title: "The Weeping Stranger", description: "This lanky being with blood-red tears greets you with a sinister 'hello'.", tags: ["ghosts", "abstract"], imageUrl: "./img/26.jpg" },
-            { id: 27, title: "The Blood-Mouthed Invitation", description: "A chilling smile beckons you closer, promising a dreadful encounter.", tags: ["ghosts", "abstract"], imageUrl: "./img/27.jpg" },
-            { id: 28, title: "The Bending Serpent", description: "A long, slender being twists unnaturally, telling you to be quiet.", tags: ["monsters", "creatures"], imageUrl: "./img/28.jpg" },
-            { id: 29, title: "The Hollowed Host", description: "A figure with an unnerving, empty expression, its body seemingly broken open.", tags: ["ghosts", "abstract" , "creatures"], imageUrl: "./img/29.jpg" },
-            { id: 30, title: "The Offering", description: "A wide, bloodied smile and a severed arm held out in a sinister gesture.", tags: ["monsters", "abstract"], imageUrl: "30.jpg" },
-            { id: 31, title: " The Unnatural Hound", description: " A monstrous, skeletal creature beckons with a chilling invitation.", tags: ["monsters", "creatures"], imageUrl: "./img/31.jpg" },
-            { id: 32, title: "Hollow Maw", description: "A lanky creature with a gaping mouth, silent but always hungry for warmth and breath.", tags: ["monsters", "abstract"], imageUrl: "./img/32.png" },
-            { id: 33, title: " Whisper Spire", description: "A small, twisted being with a single crimson eye, whispering madness into curious minds.", tags: ["monsters", "creatures"], imageUrl: "./img/33.png" }
+            { id: 1, title: "Screaming Void", description: "A being consumed by a silent, agonizing terror.", tags: ["monsters", "abstract"], imageUrl: "./img/1.jpg", realisticImageUrl: "./rimg/1.png" },
+            { id: 2, title: "Grinning Predator", description: "Its toothy smile hides a deep, unsettling hunger.", tags: ["monsters", "creatures"], imageUrl: "./img/2.jpg", realisticImageUrl: "./rimg/2.png" },
+            { id: 3, title: "The Bleeding Shadow", description: "A dark figure with a blade, dripping with a crimson past.", tags: ["abstract", "ghosts"], imageUrl: "./img/3.jpg", realisticImageUrl: "./rimg/3.png" },
+            { id: 4, title: "The Stitch-Mouth Specter", description: "A skeletal figure with a sewn-up smile and a hollow gaze.", tags: ["ghosts", "creatures"], imageUrl: "./img/4.jpg", realisticImageUrl: "./rimg/4.png" },
+            { id: 5, title: "The Trapped Spirit", description: "A lonely, ghost-like figure enclosed within a confining space.", tags: ["ghosts", "abstract"], imageUrl: "./img/5.jpg", realisticImageUrl: "./rimg/5.png" },
+            { id: 6, title: "The Star Eater", description: "A monstrous creature devouring the night sky, one star at a time.", tags: ["monsters", "abstract"], imageUrl: "./img/6.jpg", realisticImageUrl: "./rimg/6.png" },
+            { id: 7, title: "The Twin Phantoms", description: "Two ghostly birds of prey hunting for souls in the darkness.", tags: ["monsters", "ghosts"], imageUrl: "./img/7.jpg", realisticImageUrl: "./rimg/7.png" },
+            { id: 8, title: "The Bone Wolf", description: "A spectral canine with a menacing grin and a skeletal face.", tags: ["monsters", "creatures"], imageUrl: "./img/8.jpg", realisticImageUrl: "./rimg/8.png" },
+            { id: 9, title: "The Soul Tree", description: "A barren tree growing under a strange, fractured moon.", tags: ["abstract", "ghosts"], imageUrl: "./img/9.jpg", realisticImageUrl: "./rimg/9.png" },
+            { id: 10, title: "The Rooftop Stalker", description: "A monstrous stag-like creature looming over a lonely house.", tags: ["monsters", "abstract"], imageUrl: "./img/10.jpg", realisticImageUrl: "./rimg/10.png" },
+            { id: 11, title: "The Hanging Tree", description: "A solitary figure stands before a tree of forgotten souls.", tags: ["ghosts", "abstract"], imageUrl: "./img/11.jpg", realisticImageUrl: "./rimg/11.png" },
+            { id: 12, title: "Well of Sorrows", description: "Figures gather at a well, its water tainted by a dark past.", tags: ["ghosts", "abstract"], imageUrl: "./img/12.jpg", realisticImageUrl: "./rimg/12.png" },
+            { id: 13, title: "The Guardian Roots", description: "Two colossal figures emerge from the stump, looming over a small clearing.", tags: ["monsters", "creatures"], imageUrl: "./img/13.jpg", realisticImageUrl: "./rimg/13.png" },
+            { id: 14, title: "The Family Portal", description: "A family moves through a portal, unknowingly surrounded by horrors.", tags: ["ghosts", "abstract"], imageUrl: "./img/14.jpg", realisticImageUrl: "./rimg/14.png" },
+            { id: 15, title: "The Coffin Rite", description: "A strange ritual takes place, centering on a body in a coffin.", tags: ["ghosts", "abstract"], imageUrl: "./img/15.jpg", realisticImageUrl: "./rimg/15.png" },
+            { id: 16, title: "The Red Abduction", description: "A monstrous entity pulls a figure towards a sinister, gaping maw.", tags: ["monsters", "abstract"], imageUrl: "./img/16.jpg", realisticImageUrl: "./rimg/16.png" },
+            { id: 17, title: "Swing of Despair", description: "One soul swings happily while another hangs in a twisted duality.", tags: ["ghosts", "abstract"], imageUrl: "./img/17.jpg", realisticImageUrl: "./rimg/17.png" },
+            { id: 18, title: "The Lonely Tree", description: "A haunting scene of a hanged man and a creature.", tags: ["ghosts", "abstract"], imageUrl: "./img/18.jpg", realisticImageUrl: "./rimg/18.png" },
+            { id: 19, title: "The Unhinged Grin", description: "A wide, toothy smile that holds no trace of joy or sanity.", tags: ["abstract", "creatures"], imageUrl: "./img/19.jpg", realisticImageUrl: "./rimg/19.png" },
+            { id: 20, title: "The Tear-Stained Grin", description: "A creature's jagged mouth and crying eyes reveal its inner pain.", tags: ["monsters", "abstract"], imageUrl: "./img/20.jpg", realisticImageUrl: "./rimg/20.png" },
+            { id: 21, title: "The Toothy Jester", description: "A wide, unnatural smile with a disturbing set of teeth.", tags: ["creatures", "abstract"], imageUrl: "./img/21.jpg", realisticImageUrl: "./rimg/21.png" },
+            { id: 22, title: "The Two-Faced Glitch", description: "A distorted head with two faces, merging into one unsettling form.", tags: ["creatures", "abstract"], imageUrl: "./img/22.jpg", realisticImageUrl: "./rimg/22.png" },
+            { id: 23, title: "The Marked Phantom", description: "A dark figure with a mysterious red scar across its face.", tags: ["creatures", "abstract"], imageUrl: "./img/23.jpg", realisticImageUrl: "./rimg/23.png" },
+            { id: 24, title: "The Smiling Observer", description: "A tall, grinning entity has returned and it's watching you.", tags: ["monsters", "abstract"], imageUrl: "./img/24.jpg", realisticImageUrl: "./rimg/24.png" },
+            { id: 25, title: "The Bleeding Statue", description: "A rigid figure with a hollow stare and a dripping, sanguine expression.", tags: ["creatures", "abstract"], imageUrl: "./img/25.jpg", realisticImageUrl: "./rimg/25.png" },
+            { id: 26, title: "The Weeping Stranger", description: "This lanky being with blood-red tears greets you with a sinister 'hello'.", tags: ["ghosts", "abstract"], imageUrl: "./img/26.jpg", realisticImageUrl: "./rimg/26.png" },
+            { id: 27, title: "The Blood-Mouthed Invitation", description: "A chilling smile beckons you closer, promising a dreadful encounter.", tags: ["ghosts", "abstract"], imageUrl: "./img/27.jpg", realisticImageUrl: "./rimg/27.png" },
+            { id: 28, title: "The Bending Serpent", description: "A long, slender being twists unnaturally, telling you to be quiet.", tags: ["monsters", "creatures"], imageUrl: "./img/28.jpg", realisticImageUrl: "./rimg/28.png" },
+            { id: 29, title: "The Hollowed Host", description: "A figure with an unnerving, empty expression, its body seemingly broken open.", tags: ["ghosts", "abstract" , "creatures"], imageUrl: "./img/29.jpg", realisticImageUrl: "./rimg/29.jpg" },
+            { id: 30, title: "The Offering", description: "A wide, bloodied smile and a severed arm held out in a sinister gesture.", tags: ["monsters", "abstract"], imageUrl: "./img/30.jpg", realisticImageUrl: "./rimg/30.webp" },
+            { id: 31, title: " The Unnatural Hound", description: " A monstrous, skeletal creature beckons with a chilling invitation.", tags: ["monsters", "creatures"], imageUrl: "./img/31.jpg", realisticImageUrl: "./rimg/31.png" },
+            { id: 32, title: "Hollow Maw", description: "A lanky creature with a gaping mouth, silent but always hungry for warmth and breath.", tags: ["monsters", "abstract"], imageUrl: "./img/32.png", realisticImageUrl: "./rimg/32.png" },
+            { id: 33, title: " Whisper Spire", description: "A small, twisted being with a single crimson eye, whispering madness into curious minds.", tags: ["monsters", "creatures"], imageUrl: "./img/33.png", realisticImageUrl: "./rimg/33.png" }
         ];
 
         // DOM elements
@@ -847,6 +922,7 @@
         const shareBtn = document.getElementById('shareBtn');
         const loadingScreen = document.getElementById('loadingScreen');
         const loadingProgress = document.getElementById('loadingProgress');
+        const themeToggle = document.getElementById('themeToggle');
 
         // State variables
         let currentDrawings = [];
@@ -857,6 +933,7 @@
         let isViewingFavorites = false;
         let imagesLoaded = 0;
         let totalImages = 0;
+        let isRealisticMode = false;
 
         // Preload images for better performance
         function preloadImages() {
@@ -927,6 +1004,28 @@
             }, duration);
         }
 
+        // Toggle realistic mode
+        function toggleRealisticMode() {
+            isRealisticMode = !isRealisticMode;
+            
+            // Update toggle button text
+            const toggleText = themeToggle.querySelector('span');
+            const toggleIcon = themeToggle.querySelector('i');
+            
+            if (isRealisticMode) {
+                toggleText.textContent = 'View Creepy Versions';
+                toggleIcon.className = 'fas fa-ghost';
+                showNotification('Switched to Realistic Mode');
+            } else {
+                toggleText.textContent = 'View Realistic Versions';
+                toggleIcon.className = 'fas fa-palette';
+                showNotification('Switched to Creepy Mode');
+            }
+            
+            // Regenerate cards to apply realistic styling
+            generateDrawingCards(currentDrawings);
+        }
+
         // Generate drawing cards
         function generateDrawingCards(drawings) {
             gallery.innerHTML = '';
@@ -949,9 +1048,14 @@
                 card.dataset.tags = drawing.tags.join(' ');
                 card.dataset.index = index;
                 
+                // Add realistic frame class if in realistic mode
+                if (isRealisticMode) {
+                    card.classList.add('realistic-frame');
+                }
+                
                 card.innerHTML = `
                     <div class="drawing-img-container">
-                        <img class="drawing-img" src="${drawing.imageUrl}" alt="${drawing.title}" loading="lazy">
+                        <img class="drawing-img" src="${isRealisticMode && drawing.realisticImageUrl ? drawing.realisticImageUrl : drawing.imageUrl}" alt="${drawing.title}" loading="lazy">
                         <div class="card-actions">
                             <button class="action-btn favorite-btn ${isFavorite ? 'active' : ''}" data-id="${drawing.id}">
                                 <i class="${isFavorite ? 'fas' : 'far'} fa-heart"></i>
@@ -1061,7 +1165,7 @@
                 modal.style.opacity = 1;
             }, 10);
             
-            modalImage.src = drawing.imageUrl;
+            modalImage.src = isRealisticMode && drawing.realisticImageUrl ? drawing.realisticImageUrl : drawing.imageUrl;
             modalImage.alt = drawing.title;
             modalTitle.textContent = drawing.title;
             modalDesc.textContent = drawing.description;
@@ -1091,7 +1195,7 @@
             modalImage.style.opacity = 0;
             
             setTimeout(() => {
-                modalImage.src = drawing.imageUrl;
+                modalImage.src = isRealisticMode && drawing.realisticImageUrl ? drawing.realisticImageUrl : drawing.imageUrl;
                 modalImage.alt = drawing.title;
                 modalTitle.textContent = drawing.title;
                 modalDesc.textContent = drawing.description;
@@ -1250,6 +1354,7 @@
         });
         downloadBtn.addEventListener('click', downloadImage);
         shareBtn.addEventListener('click', shareImage);
+        themeToggle.addEventListener('click', toggleRealisticMode);
 
         // Keyboard navigation
         document.addEventListener('keydown', (e) => {
@@ -1274,7 +1379,7 @@
         // Random flickering effect for added creepiness
         setInterval(() => {
             const randomCard = document.querySelectorAll('.drawing-card')[Math.floor(Math.random() * drawingsData.length)];
-            if (randomCard) {
+            if (randomCard && !isRealisticMode) {
                 randomCard.style.boxShadow = '0 0 15px var(--blood-red)';
                 setTimeout(() => {
                     randomCard.style.boxShadow = '';
